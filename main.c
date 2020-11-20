@@ -1,4 +1,3 @@
-#include <SDL2/SDL_keycode.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
@@ -81,6 +80,12 @@ int main(int argc, char **argv) {
             Mix_PlayMusic(shotSound, 1);
             break;
         }
+      } else if(e.type == SDL_MOUSEMOTION) {
+        // mouse move
+        printf("mouse x=%d y=%d\n", e.motion.x, e.motion.y);
+      } else if(e.type == SDL_MOUSEBUTTONUP) {
+        // e.button.button: SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE, SDL_BUTTON_RIGHT
+        printf("mouse x=%d y=%d button=%d\n", e.button.x, e.button.y, e.button.button);
       }
     }
 
