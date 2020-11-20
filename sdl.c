@@ -27,7 +27,8 @@ SDL_Context sdl_context_init(const char* window_name, int width, int height) {
       exit(1);
     }
 
-    SDL_Window *window = SDL_CreateWindow(window_name, 100, 100, width, height, SDL_WINDOW_SHOWN);
+    bool enableFullscreen = width <= 0 || height <= 0;
+    SDL_Window *window = SDL_CreateWindow(window_name, 100, 100, width, height, SDL_WINDOW_SHOWN | (enableFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
     if (window == NULL) {
       fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
       exit(1);
@@ -44,6 +45,13 @@ SDL_Context sdl_context_init(const char* window_name, int width, int height) {
     if(SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND) != 0) {
       fprintf(stderr, "SDL_SetRenderDrawBlendMode Error: %s\n", SDL_GetError());
       exit(1);
+    }
+
+    if(enableFullscreen) {
+      if(SDL_GetRendererOutputSize(renderer, &width, &height) != 0) {
+        fprintf(stderr, "SDL_GetRendererOutputSize Error: %s\n", SDL_GetError());
+        exit(1);
+      }
     }
 
     return (SDL_Context) {

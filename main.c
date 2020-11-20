@@ -7,8 +7,18 @@
 #include "SDL2/SDL_mixer.h"
 #include "sdl.h"
 
-int main() {
-  SDL_Context ctx = sdl_context_init("game", 800, 600);
+int main(int argc, char **argv) {
+  int width = 800;
+  int height = 600;
+
+  if(argc >= 2) {
+    if(sscanf(argv[1], "%dx%d", &width, &height) != 2) {
+      fprintf(stderr, "Usage: %s WxH\n", argv[0]);
+      exit(1);
+    }
+  }
+
+  SDL_Context ctx = sdl_context_init("game", width, height);
 
   Mix_Music *shotSound = Mix_LoadMUS("resources/shot.ogg");
   if(shotSound == NULL) {
