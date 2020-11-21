@@ -70,6 +70,15 @@ SDL_Context* sdl_context_new(const char* window_name, int width, int height) {
     return ctx;
 }
 
+void sdl_context_delete(SDL_Context *ctx) {
+  SDL_DestroyRenderer(ctx->renderer);
+  SDL_DestroyWindow(ctx->window);
+  Mix_CloseAudio();
+  Mix_Quit();
+  TTF_Quit();
+  SDL_Quit();
+}
+
 void draw_text(SDL_Renderer *renderer, TTF_Font *font, const char *str, int x, int y, SDL_Color color, bool center_anchor) {
   // Render the text with a font into the RAM memory
   SDL_Surface *surface = TTF_RenderText_Solid(font, str, color);

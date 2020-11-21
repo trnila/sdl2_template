@@ -115,5 +115,7 @@ int main(int argc, char **argv) {
     // update the screen
     SDL_RenderPresent(ctx->renderer);
   }
+
+  sdl_context_delete(ctx);
   return 0;
 }
