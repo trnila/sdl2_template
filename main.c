@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  SDL_Context ctx = sdl_context_init("game", width, height);
+  SDL_Context *ctx = sdl_context_new("game", width, height);
 
   Mix_Music *shotSound = Mix_LoadMUS("resources/shot.ogg");
   if(shotSound == NULL) {
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  SDL_Texture *image = IMG_LoadTexture(ctx.renderer, "resources/ball.svg");
+  SDL_Texture *image = IMG_LoadTexture(ctx->renderer, "resources/ball.svg");
   if (image == NULL) {
     fprintf(stderr, "Failed to load image: %s\n", SDL_GetError());
     return 1;
@@ -46,8 +46,8 @@ int main(int argc, char **argv) {
   SDL_Rect r;
   r.w = 100;
   r.h = 100;
-  r.x = ctx.width / 2 - r.w / 2;
-  r.y = ctx.height / 2;
+  r.x = ctx->width / 2 - r.w / 2;
+  r.y = ctx->height / 2;
 
   bool quit = false;
   int i = 0;
@@ -90,30 +90,30 @@ int main(int argc, char **argv) {
     }
 
     // set the current drawing color to black
-    SDL_SetRenderDrawColor(ctx.renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
     // clear the screen with the current color black
-    SDL_RenderClear(ctx.renderer);
+    SDL_RenderClear(ctx->renderer);
 
     // draw texts
-    draw_text(ctx.renderer, bigFont, "The Game", ctx.width / 2, ctx.height / 4, (SDL_Color) {255, 0, 0, 200}, 1);
-    draw_text(ctx.renderer, smallFont, "Press up/down or space", ctx.width / 2, ctx.height / 4 + 70, (SDL_Color) {255, 0, 0, 200}, 1);
+    draw_text(ctx->renderer, bigFont, "The Game", ctx->width / 2, ctx->height / 4, (SDL_Color) {255, 0, 0, 200}, 1);
+    draw_text(ctx->renderer, smallFont, "Press up/down or space", ctx->width / 2, ctx->height / 4 + 70, (SDL_Color) {255, 0, 0, 200}, 1);
 
     // format the FPS string
     char buffer[64];
     snprintf(buffer, sizeof(buffer), "%d ms / frame, %d FPS", (int) elapsed_ms, (int) (1000.0 / elapsed_ms));
     // draw FPS counter on the screen
-    draw_text(ctx.renderer, smallFont, buffer, 0, 0, (SDL_Color) {255, 0, 0, 200}, 0);
+    draw_text(ctx->renderer, smallFont, buffer, 0, 0, (SDL_Color) {255, 0, 0, 200}, 0);
 
     // set the current color to blue with 50% transparency (128 / 255)
-    SDL_SetRenderDrawColor(ctx.renderer, 0, 0, 255, 128);
+    SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 255, 128);
     // draw the rect
-    SDL_RenderFillRect(ctx.renderer, &r);
+    SDL_RenderFillRect(ctx->renderer, &r);
 
     // render the image, i is rotation - see documentation
-    SDL_RenderCopyEx(ctx.renderer, image, NULL, &r, i++, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyEx(ctx->renderer, image, NULL, &r, i++, NULL, SDL_FLIP_NONE);
 
     // update the screen
-    SDL_RenderPresent(ctx.renderer);
+    SDL_RenderPresent(ctx->renderer);
   }
   return 0;
 }

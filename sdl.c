@@ -2,7 +2,13 @@
 #include "SDL2/SDL_mixer.h"
 #include "sdl.h"
 
-SDL_Context sdl_context_init(const char* window_name, int width, int height) {
+SDL_Context* sdl_context_new(const char* window_name, int width, int height) {
+    SDL_Context *ctx = malloc(sizeof(SDL_Context));
+    if(ctx == NULL) {
+      fprintf(stderr, "Could not allocate memory.");
+      exit(1);
+    }
+
     // Init SDL with video and audio
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
       fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
@@ -28,43 +34,40 @@ SDL_Context sdl_context_init(const char* window_name, int width, int height) {
     }
 
     bool enableFullscreen = width <= 0 || height <= 0;
-    SDL_Window *window = SDL_CreateWindow(
+    ctx->window = SDL_CreateWindow(
       window_name,
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
       width, height,
       SDL_WINDOW_SHOWN | (enableFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)
     );
-    if (window == NULL) {
+    if (ctx->window == NULL) {
       fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
       exit(1);
     }
 
     // create GPU accelerated renderer and use vertical sync
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == NULL) {
+    ctx->renderer = SDL_CreateRenderer(ctx->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (ctx->renderer == NULL) {
       fprintf(stderr, "SDL_CreateRenderer Error: %s\n", SDL_GetError());
       exit(1);
     }
 
     // enable transparency
-    if(SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND) != 0) {
+    if(SDL_SetRenderDrawBlendMode(ctx->renderer, SDL_BLENDMODE_BLEND) != 0) {
       fprintf(stderr, "SDL_SetRenderDrawBlendMode Error: %s\n", SDL_GetError());
       exit(1);
     }
 
     if(enableFullscreen) {
-      if(SDL_GetRendererOutputSize(renderer, &width, &height) != 0) {
+      if(SDL_GetRendererOutputSize(ctx->renderer, &width, &height) != 0) {
         fprintf(stderr, "SDL_GetRendererOutputSize Error: %s\n", SDL_GetError());
         exit(1);
       }
     }
 
-    return (SDL_Context) {
-      .width = width,
-      .height = height,
-      .renderer = renderer,
-      .window = window,
-    };
+    ctx->width = width;
+    ctx->height = height;
+    return ctx;
 }
 
 void draw_text(SDL_Renderer *renderer, TTF_Font *font, const char *str, int x, int y, SDL_Color color, bool center_anchor) {
