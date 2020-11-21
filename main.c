@@ -116,6 +116,11 @@ int main(int argc, char **argv) {
     SDL_RenderPresent(ctx->renderer);
   }
 
+  // cleanup all resources
+  TTF_CloseFont(smallFont);
+  TTF_CloseFont(bigFont);
+  SDL_DestroyTexture(image);
+  Mix_FreeMusic(shotSound);
   sdl_context_delete(ctx);
   return 0;
 }
