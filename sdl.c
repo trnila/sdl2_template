@@ -94,9 +94,6 @@ void draw_text(SDL_Renderer *renderer, TTF_Font *font, const char *str, int x, i
     exit(1);
   }
 
-  // we have the texture in the GPU, surface is no longer needed
-  SDL_FreeSurface(surface);
-
   // render the texture on x, y with width and height
   SDL_Rect rect;
   rect.x = x - surface->w / 2 * center_anchor;
@@ -104,6 +101,9 @@ void draw_text(SDL_Renderer *renderer, TTF_Font *font, const char *str, int x, i
   rect.w = surface->w;
   rect.h = surface->h;
   SDL_RenderCopy(renderer, texture, NULL, &rect);
+  
+  // delete the surface from the CPU memory
+  SDL_FreeSurface(surface);
 
   // Texture needs to be freed from the GPU
   SDL_DestroyTexture(texture);
