@@ -19,13 +19,19 @@ int main(int argc, char **argv) {
 
   SDL_Context *ctx = sdl_context_new("game", width, height);
 
-  Mix_Music *shotSound = Mix_LoadMUS("resources/shot.ogg");
-  if(shotSound == NULL) {
+  Mix_Chunk *shot = Mix_LoadWAV("resources/shot.ogg");
+  if(shot == NULL) {
     fprintf(stderr, "Could not load sound: %s\n", Mix_GetError());
     exit(1);
   }
 
-  SDL_Texture *image = IMG_LoadTexture(ctx->renderer, "resources/ball.svg");
+  Mix_Music *music= Mix_LoadMUS("resources/music.ogg");
+  if(music == NULL) {
+    fprintf(stderr, "Could not load sound: %s\n", Mix_GetError());
+    exit(1);
+  }
+
+  SDL_Texture *image = IMG_LoadTexture(ctx->renderer, "resources/ball.png");
   if (image == NULL) {
     fprintf(stderr, "Failed to load image: %s\n", SDL_GetError());
     return 1;
@@ -43,6 +49,10 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+  // start playing music
+  Mix_PlayMusic(music, -1);
+
+  // rect for our player
   SDL_Rect r;
   r.w = 100;
   r.h = 100;
@@ -77,8 +87,10 @@ int main(int argc, char **argv) {
             r.y -= 20;
             break;
           case SDLK_SPACE:
-            Mix_PlayMusic(shotSound, 1);
+            Mix_PlayChannel(-1, shot, 0);
             break;
+          default:
+            printf("key pressed: %d\n", e.key.keysym.sym);
         }
       } else if(e.type == SDL_MOUSEMOTION) {
         // mouse move
@@ -104,8 +116,8 @@ int main(int argc, char **argv) {
     // draw FPS counter on the screen
     draw_text(ctx->renderer, smallFont, buffer, 0, 0, (SDL_Color) {255, 0, 0, 200}, 0);
 
-    // set the current color to blue with 50% transparency (128 / 255)
-    SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 255, 128);
+    // set the current color to the red with 50% transparency (128 / 255)
+    SDL_SetRenderDrawColor(ctx->renderer, 255, 0, 0, 128);
     // draw the rect
     SDL_RenderFillRect(ctx->renderer, &r);
 
@@ -120,7 +132,8 @@ int main(int argc, char **argv) {
   TTF_CloseFont(smallFont);
   TTF_CloseFont(bigFont);
   SDL_DestroyTexture(image);
-  Mix_FreeMusic(shotSound);
+  Mix_FreeMusic(music);
+  Mix_FreeChunk(shot);
   sdl_context_delete(ctx);
   return 0;
 }

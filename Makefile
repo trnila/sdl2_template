@@ -10,7 +10,7 @@ PROGRAM = game
 # $^ - inputs (main.o image.o)
 # $@ - outputs (main)
 # output: inputs
-$(PROGRAM): main.o sdl.o
+$(PROGRAM): main.o sdl.o # add more object files here...
 	gcc $^ -o $@ $(CFLAGS) $(LDFLAGS)
 
 # run to delete all compiled files
