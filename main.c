@@ -3,8 +3,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#include "SDL2/SDL_mixer.h"
 #include "sdl.h"
+
+#if AUDIO_ENABLE
+#include <SDL2/SDL_mixer.h>
+#endif
 
 int main(int argc, char **argv) {
   int width = 800;
@@ -19,6 +22,7 @@ int main(int argc, char **argv) {
 
   SDL_Context *ctx = sdl_context_new("game", width, height);
 
+#if AUDIO_ENABLE
   Mix_Chunk *shot = Mix_LoadWAV("resources/shot.ogg");
   if(shot == NULL) {
     fprintf(stderr, "Could not load sound: %s\n", Mix_GetError());
@@ -30,6 +34,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Could not load sound: %s\n", Mix_GetError());
     exit(1);
   }
+#endif
 
   SDL_Texture *image = IMG_LoadTexture(ctx->renderer, "resources/ball.png");
   if (image == NULL) {
@@ -49,8 +54,10 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+#if AUDIO_ENABLE
   // start playing music
   Mix_PlayMusic(music, -1);
+#endif
 
   // rect for our player
   SDL_Rect r;
@@ -87,7 +94,9 @@ int main(int argc, char **argv) {
             r.y -= 20;
             break;
           case SDLK_SPACE:
+#if AUDIO_ENABLE
             Mix_PlayChannel(-1, shot, 0);
+#endif
             break;
           default:
             printf("key pressed: %d\n", e.key.keysym.sym);
@@ -132,8 +141,10 @@ int main(int argc, char **argv) {
   TTF_CloseFont(smallFont);
   TTF_CloseFont(bigFont);
   SDL_DestroyTexture(image);
+#if AUDIO_ENABLE
   Mix_FreeMusic(music);
   Mix_FreeChunk(shot);
+#endif
   sdl_context_delete(ctx);
   return 0;
 }

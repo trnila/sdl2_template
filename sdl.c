@@ -1,6 +1,9 @@
 #include <SDL2/SDL_image.h>
-#include "SDL2/SDL_mixer.h"
 #include "sdl.h"
+
+#if AUDIO_ENABLE
+#include <SDL2/SDL_mixer.h>
+#endif
 
 SDL_Context* sdl_context_new(const char* window_name, int width, int height) {
   SDL_Context *ctx = malloc(sizeof(SDL_Context));
@@ -21,6 +24,7 @@ SDL_Context* sdl_context_new(const char* window_name, int width, int height) {
     exit(1);
   }
 
+#if AUDIO_ENABLE
   // Init audio with support for .ogg, .opus and .mp3
   int flags = MIX_INIT_OGG | MIX_INIT_OPUS | MIX_INIT_MP3;
   if (flags != (Mix_Init(flags))) {
@@ -32,6 +36,7 @@ SDL_Context* sdl_context_new(const char* window_name, int width, int height) {
     fprintf(stderr, "Mix_OpenAudio Error: %s\n", Mix_GetError());
     exit(1);
   }
+#endif
 
   bool enableFullscreen = width <= 0 || height <= 0;
   ctx->window = SDL_CreateWindow(
@@ -73,8 +78,10 @@ SDL_Context* sdl_context_new(const char* window_name, int width, int height) {
 void sdl_context_delete(SDL_Context *ctx) {
   SDL_DestroyRenderer(ctx->renderer);
   SDL_DestroyWindow(ctx->window);
+#if AUDIO_ENABLE
   Mix_CloseAudio();
   Mix_Quit();
+#endif
   TTF_Quit();
   SDL_Quit();
 }

@@ -4,6 +4,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 
+#define AUDIO_ENABLE 1
+
 typedef struct {
   SDL_Window *window;
   SDL_Renderer *renderer;
