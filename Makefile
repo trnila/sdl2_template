@@ -16,7 +16,7 @@ $(PROGRAM): main.o sdl.o # add more object files here...
 # run to delete all compiled files
 # $ make clean
 clean:
-	rm -f *.o $(PROGRAM)
+	rm -f *.o *.d $(PROGRAM)
 
 # include *.d file with dependencies on header files
 -include *.d
